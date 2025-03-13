@@ -1,288 +1,210 @@
-<!DOCTYPE html>
-<!-- Source Code: https://github.com/BinBashBanana/webretro -->
+<!doctype html>
 <html lang="en">
-	<head>
-		<meta charset="utf-8">
-		<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1">
-		<meta name="color-scheme" content="dark light">
-		<meta name="theme-color" content="#333333">
-		<title>webretro</title>
-		<meta name="description" content="RetroArch in your browser! Libretro cores compiled to WASM using emscripten, plus a custom UI.">
-		<meta name="robots" content="nofollow">
-		<meta name="og:title" content="webretro">
-		<meta name="og:type" content="website">
-		<meta name="og:image" content="assets/icons/icon204.png">
-		<meta name="og:url" content="https://binbashbanana.github.io/webretro/">
-		<link rel="stylesheet" href="assets/base.css?v=6.5">
-		<link rel="stylesheet" href="assets/jswindow.css">
-		<link rel="shortcut icon" href="assets/icons/icon204.png">
-		<link rel="apple-touch-icon" href="assets/icons/iconm256.png">
-		<link rel="manifest" href="manifest.json">
-		<link rel="canonical" href="https://binbashbanana.github.io/webretro/">
-		<link rel="dns-prefetch" href="https://cdn.jsdelivr.net/">
-	</head>
-	<body>
-		<div class="main" id="mainarea">
-			<div id="menubar">
-				<input type="checkbox" id="menuhider">
-				<label for="menuhider" class="menuhiderlabel"></label>
-				<ul id="menu">
-					<li class="menuback"><a href="." title="Back to core selection"></a></li>
-					<li>Controls
-						<ul>
-							<li><a id="keybindsbutton" href="">Keybinds</a></li>
-							<li class="menu-long menu-nohover">Please note that these are just the bindings that are set, but in-game controls may vary.</li>
-							<li><a href="" title="Opens in new tab" onclick="window.open(window.URL.createObjectURL(new Blob([decodeURIComponent(atob('JTNDIURPQ1RZUEUlMjBodG1sJTNFJTNDaHRtbCUzRSUzQ2hlYWQlM0UlM0NtZXRhJTIwaHR0cC1lcXVpdiUzRCUyMnJlZnJlc2glMjIlMjBjb250ZW50JTNEJTIyMSUzQlVSTCUzRGh0dHBzJTNBJTJGJTJGcmV0cm9waWUub3JnLnVrJTJGZG9jcyUyRlJldHJvQXJjaC1Db25maWd1cmF0aW9uJTJGJTIzZGVmYXVsdC1jb3JlLWNvbnRyb2xzLWZvci1hbGwtZW11bGF0b3JzJTIyJTNFJTNDdGl0bGUlM0VSZWRpcmVjdGluZyUzQyUyRnRpdGxlJTNFJTNDJTJGaGVhZCUzRSUzQ2JvZHklM0UlM0NoMiUzRVJlZGlyZWN0aW5nLi4uJTNDJTJGaDIlM0UlM0MlMkZib2R5JTNFJTNDJTJGaHRtbCUzRQ=='))], {type: 'text/html'})));return false;">System Specifics</a></li>
-						</ul>
-					</li>
-					<li>Saves
-						<ul>
-							<li class="pointer disabled" id="savegame">Save Game</li>
-							<li class="pointer disabled" id="resetbutton">Reset</li>
-							<li class="pointer disabled" id="exportsave">Export SRAM</li>
-							<li class="pointer disabled" id="importsave">Import SRAM</li>
-							<li class="disabled"><label><input type="checkbox" id="autosave" checked disabled>Autosave (5m)</label></li>
-							<li><a id="savesbutton" href="">Recover Saves</a></li>
-							<li class="menu-long menu-nohover" style="width: 200px;">Please note that in order for the game to be saved, you must use the save feature in-game (unless of course the game itself autosaves), then press the save button here (Or autosave must happen). <b>These saves are only for in-game save files. If you want to be able to save at any time, use save states.</b> Saves and states are saved in your browser's indexedDB and are automatically readied every time you visit the page. You only need to use export and import for backups.</li>
-						</ul>
-					</li>
-					<li>States
-						<ul>
-							<li class="pointer disabled" id="savestate">Save State</li>
-							<li class="pointer disabled" id="loadstate">Load State</li>
-							<li class="pointer disabled" id="undosavestate">Undo Save State</li>
-							<li class="pointer disabled" id="undoloadstate">Undo Load State</li>
-							<li class="pointer disabled" id="exportstate">Export State</li>
-							<li class="pointer disabled" id="importstate">Import State</li>
-							<li><a id="statesbutton" href="">Recover States</a></li>
-							<li class="menu-long menu-nohover" style="width: 200px;">You must save state before you export state; exported states are not states from the time of exporting.</li>
-						</ul>
-					</li>
-					<li>Screenshots
-						<ul>
-							<li class="pointer disabled" id="takescreenshot">Take Screenshot</li>
-							<li><a id="screenshotsbutton" href="">Screenshots</a></li>
-						</ul>
-					</li>
-					<li>More
-						<ul>
-							<li class="disabled" title="May resolve minor scaling issues"><label><input type="checkbox" id="smooth" disabled>Smooth Scaling</label></li>
-							<li class="pointer" id="fullscreenbutton">Fullscreen</li>
-							<li class="pointer" id="consolebutton">Console</li>
-							<li>Theme
-								<ul>
-									<li class="menu-nohover">
-										<form id="themeselector" class="menuform">
-											<label><input type="radio" name="theme" value="iodinelight">Iodine (Light)</label>
-											<label><input type="radio" name="theme" value="iodinedark">Iodine (Dark)</label>
-											<label><input type="radio" name="theme" value="webplayer">Web Player</label>
-											<label><input type="radio" name="theme" value="webplayernavy">Web Player (Navy)</label>
-											<label class="disabled"><input type="radio" name="theme" value="emulatorjs" disabled>EmulatorJS</label>
-										</form>
-									</li>
-								</ul>
-							</li>
-							<li class="pointer disabled" id="resetbutton2">Reset</li>
-							<li class="pointer disabled" id="mousegrabbutton">Mouse Grab</li>
-							<li class="pointer disabled" id="gamefocusbutton">Game Focus</li>
-							<li>Cheats
-								<ul class="xlmenu">
-									<li>How to apply a cheat code</li>
-									<li>1. Open the Menu</li>
-									<li>2. Scroll down</li>
-									<li>3. Click "Cheats"</li>
-									<li>4. Click "Add new cheat to bottom/top"</li>
-									<li>5. Click the new cheat that you just created</li>
-									<li>6. Click "Code"</li>
-									<li>7. Enter/paste the cheat code</li>
-									<li>8. When you are done, press enter</li>
-									<li>9. Click "Enabled" (Set to ON)</li>
-									<li>10. Go back to Cheats by clicking the bar on the top</li>
-									<li>11. Click "Apply Changes"</li>
-									<li>12. Exit the menu</li>
-									<li class="disabled">(More coming soon)</li>
-								</ul>
-							</li>
-							<li>Shaders
-								<ul>
-									<li class="disabled">(Coming soon)</li>
-								</ul>
-							</li>
-							<li id="pso">Pre-start Options
-								<ul>
-									<li class="menu-nohover">
-										<form class="menuform" data-core="a5200">
-											<label><input type="checkbox" data-opt="lowpass">Low-pass Filter</label>
-										</form>
-										<form class="menuform" data-core="mednafen_psx">
-											<label><input type="checkbox" data-opt="highres">High Resolution</label>
-											<label><input type="checkbox" data-opt="ditherscaling">Dither Scaling</label>
-											<label><input type="checkbox" data-opt="widescreen">Widescreen Hack</label>
-											<label><input type="checkbox" data-opt="antijitter">PGXP Anti-jitter</label>
-										</form>
-										<form class="menuform" data-core="mednafen_psx_hw">
-											<label><input type="checkbox" data-opt="softwarerenderer">Use Software Renderer</label>
-											<label><input type="checkbox" data-opt="highres">High Resolution</label>
-											<label><input type="checkbox" data-opt="ditherscaling">Dither Scaling</label>
-											<label><input type="checkbox" data-opt="widescreen">Widescreen Hack</label>
-											<label><input type="checkbox" data-opt="antijitter">PGXP Anti-jitter</label>
-										</form>
-										<form class="menuform" data-core="mednafen_vb">
-											<label><input type="checkbox" data-opt="anaglyph">Red/Blue Anaglyph</label>
-										</form>
-										<form class="menuform" data-core="mednafen_wswan">
-											<label><input type="checkbox" data-opt="75hz">75hz Mode</label>
-											<label><input type="checkbox" data-opt="portrait">Portrait Orientation</label>
-											<label><input type="checkbox" data-opt="lowpass">Low-pass Filter</label>
-										</form>
-										<form class="menuform" data-core="melonds">
-											<label><input type="checkbox" data-opt="leftright">Left/Right</label>
-										</form>
-										<form class="menuform" data-core="mgba">
-											<label><input type="checkbox" data-opt="lowpass">Low-pass Filter</label>
-										</form>
-										<form class="menuform" data-core="mupen64plus_next">
-											<label><input type="checkbox" data-opt="highres">High Resolution</label>
-											<label><input type="checkbox" data-opt="widescreen">Widescreen Hack</label>
-										</form>
-										<form class="menuform" data-core="o2em">
-											<label><input type="checkbox" data-opt="lowpass">Low-pass Filter</label>
-										</form>
-										<form class="menuform" data-core="parallel_n64">
-											<label><input type="checkbox" data-opt="highres">High Resolution</label>
-											<label title="Use gles2n64 instead of Glide64"><input type="checkbox" data-opt="renderer2">Use glN64</label>
-										</form>
-										<form class="menuform" data-core="prosystem">
-											<label><input type="checkbox" data-opt="lowpass">Low-pass Filter</label>
-										</form>
-										<form class="menuform" data-core="snes9x">
-											<label><input type="checkbox" data-opt="mouse">SNES Mouse</label>
-										</form>
-										<form class="menuform" data-core="stella2014">
-											<label><input type="checkbox" data-opt="lowpass">Low-pass Filter</label>
-										</form>
-										<form class="menuform" data-core="vecx">
-											<label><input type="checkbox" data-opt="softwarerenderer">Use Software Renderer</label>
-										</form>
-										<form class="menuform" data-core="virtualjaguar">
-											<label><input type="checkbox" data-opt="fastblitter">Fast Blitter</label>
-										</form>
-										<form class="menuform" data-core="yabause">
-											<label><input type="checkbox" data-opt="frameskip">Enable Frameskip</label>
-										</form>
-									</li>
-								</ul>
-							</li>
-							<li class="pointer" id="downloadstandalonebutton">Download Standalone</li>
-							<li><a href="https://github.com/BinBashBanana/webretro" target="_blank">GitHub</a></li>
-						</ul>
-					</li>
-					<li id="menubutton" class="disabled">
-						Menu
-					</li>
-					<li id="pause" class="disabled">
-						Pause
-					</li>
-				</ul>
-			</div>
-			<h1 id="webretrotitle">webretro</h1>
-			<div id="ffd">
-				<div id="ffdcontent">
-					<div id="coreselectarea">
-						<h3>Select a Core</h3>
-						<div class="coreorderrow">
-							<label for="coreorder">Sort by:</label>
-							<select id="coreorder">
-								<option value="system" selected>System</option>
-								<option value="corename">Core name</option>
-								<option value="libraryname">Library name</option>
-							</select>
-						</div>
-						<ul class="corelistul">
-							<li><a href="?core=autodetect" class="greyer">AutoDetect (Slower to load)</a></li>
-							<span id="corelist"></span>
-						</ul>
-					</div>
-					<div id="uploadarea">
-						<h2><span id="systemname"></span> Emulator</h2>
-						<input type="button" id="upload" value="Choose ROM File" class="uploadbutton">
-						<br>
-						<img id="googledriveupload" class="uploadbutton uploadimage" title="Google Drive Upload" src="assets/icons/googledrive.png">
-						<img id="dropboxupload" class="uploadbutton uploadimage" title="Dropbox Upload" src="assets/icons/dropbox.png">
-						<img id="onedriveupload" class="uploadbutton uploadimage" title="OneDrive Upload" src="assets/icons/onedrive.png">
-					</div>
-				</div>
-				<div class="source">
-					<a href="https://github.com/BinBashBanana/webretro" target="_blank">GitHub</a>
-					<a href="https://github.com/libretro" target="_blank">Libretro</a>
-					<a href="" target="_blank" id="coregithub">Core Github</a>
-					<a href="https://emscripten.org" target="_blank">Emscripten</a>
-					<a href="info/" target="_blank">Info</a>
-					<span id="versionindicator"></span>
-				</div>
-			</div>
-			<p id="updatenotice"></p>
-			<input type="button" id="startbutton" value="Start">
-			<div id="loadingdiv">
-				<p class="loadingloading">Loading</p>
-				<p id="loadingtext"></p>
-				<progress id="loadingbar" max="1"></progress>
-			</div>
-			<canvas id="canvas" class="texturePixelated"></canvas>
-			<div id="canvasmask">
-				<div id="resume">
-					<div>
-						<h1>Paused</h1>
-						<h3>Click to resume</h3>
-					</div>
-				</div>
-				<div id="sidealertholder"></div>
-			</div>
-			<div id="modals">
-				<div id="managers">
-					<div class="modaltop">
-						<h2 id="managertitle"></h2>
-						<span id="managerclose">&#x2716;</span>
-					</div>
-					<div id="keybindmanager">
-						<h4>Click on the right column to change a key. Press save when you are finished!</h4>
-						<table class="managertableparent managertableparentshort">
-							<tbody class="managertable" id="keybindtable"></tbody>
-						</table>
-						<input type="button" id="savekeybinds" class="specialblue" value="Save">
-						<input type="button" id="resetkeybinds" value="Reset to Default">
-					</div>
-					<div id="screenshotmanager">
-						<div id="screenshotsdiv"></div>
-						<div class="screenshotsbottom">
-							<h4>Screenshots do not persist through page reloads! Download your screenshots now!</h4>
-							<input type="button" id="downloadallscreenshots" value="Download All (zip)">
-						</div>
-					</div>
-					<div id="savemanager">
-						<table class="managertableparent">
-							<tbody class="managertable" id="savetable"></tbody>
-						</table>
-						<h4>Here, you can download all of the webretro saves and states made on <i>this domain</i>.</h4>
-						<div class="savesbottom">
-							<span id="quotatext"></span>
-						</div>
-					</div>
-					<div id="romselector">
-						<table class="managertableparent">
-							<tbody class="managertable" id="romselectortable"></tbody>
-						</table>
-						<h4 id="recommendedextensions"></h4>
-					</div>
-				</div>
-			</div>
-		</div>
-		<script type="text/javascript" src="assets/zip-2.4.7.min.js"></script>
-		<script type="text/javascript" src="assets/md5.min.js"></script>
-		<script type="text/javascript" src="uauth/uauth.js"></script>
-		<script type="text/javascript" src="assets/jswindow.js"></script>
-		<script type="text/javascript" src="pwa.js"></script>
-		<script type="text/javascript" src="assets/charToCodeMap.js?v=6.5"></script>
-		<script type="text/javascript" src="assets/base.js?v=6.5"></script>
-	</body>
+<head>
+   <meta charset="utf-8">
+   <title>RetroArch Web Player</title>
+   <meta name="viewport" content="width=device-width, initial-scale=1">
+   <!-- Bootstrap core CSS -->
+   <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0-alpha.3/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.0/css/font-awesome.min.css">
+    <!-- Material Design Bootstrap -->
+    <link href="//cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.1.1/css/mdb.min.css" rel="stylesheet">
+
+   <link href="libretro.css" rel="stylesheet" type="text/css">
+   <link rel="shortcut icon" href="media/retroarch.ico" />
+
+</head>
+<body>
+   <!--Navbar-->
+   <nav class="navbar navbar-dark bg-primary">
+     <div class="container">
+           <!--navbar content-->
+           <div class="navbar-toggleable-xs">
+               <!--Links-->
+               <ul class="nav navbar-nav">
+                  <div class="dropdown">
+                  <li class="nav-item dropdown">
+                        <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Core Selection</button>
+                        <div class="dropdown-menu dropdown-primary" aria-labelledby="dropdownMenu1" data-dropdown-in="fadeIn" data-dropdown-out="fadeOut" id="core-selector">
+                           <a class="dropdown-item" href="." data-core="2048">2048</a>
+                           <a class="dropdown-item" href="." data-core="arduous">Arduous</a>
+                           <a class="dropdown-item" href="." data-core="bk">BK</a>
+                           <a class="dropdown-item" href="." data-core="bluemsx">BlueMSX</a>
+                           <a class="dropdown-item" href="." data-core="chailove">ChaiLove</a>
+                           <a class="dropdown-item" href="." data-core="craft">Craft</a>
+                           <a class="dropdown-item" href="." data-core="desmume">DeSmuME</a>
+                           <a class="dropdown-item" href="." data-core="dosbox">DOSBox</a>
+                           <a class="dropdown-item" href="." data-core="easyrpg">EasyRPG</a>
+                           <a class="dropdown-item" href="." data-core="ecwolf">ECWolf</a>
+                           <a class="dropdown-item" href="." data-core="fbalpha2012">FB Alpha 2012</a>
+                           <a class="dropdown-item" href="." data-core="fbalpha2012_cps1">FB Alpha 2012 CPS1</a>
+                           <a class="dropdown-item" href="." data-core="fbalpha2012_cps2">FB Alpha 2012 CPS2</a>
+                           <a class="dropdown-item" href="." data-core="fbalpha2012_neo">FB Alpha 2012 NeoGeo</a>
+                           <a class="dropdown-item" href="." data-core="fceumm">FCEUmm</a>
+                           <a class="dropdown-item" href="." data-core="ffmpeg">FFmpeg</a>
+                           <a class="dropdown-item" href="." data-core="freechaf">FreeChaF</a>
+                           <a class="dropdown-item" href="." data-core="gambatte">Gambatte</a>
+                           <a class="dropdown-item" href="." data-core="gme">Game Music Emu</a>
+                           <a class="dropdown-item" href="." data-core="gearboy">GearBoy</a>
+                           <a class="dropdown-item" href="." data-core="gearcoleco">GearColeco</a>
+                           <a class="dropdown-item" href="." data-core="gearsystem">GearSystem</a>
+                           <a class="dropdown-item" href="." data-core="genesis_plus_gx">Genesis Plus GX</a>
+                           <a class="dropdown-item" href="." data-core="genesis_plus_gx_wide">Genesis Plus GX Wide</a>
+                           <a class="dropdown-item" href="." data-core="glupen64">GLupeN64</a>
+                           <!--<a class="dropdown-item" href="." data-core="gpsp">gPSP</a>-->
+                           <a class="dropdown-item" href="." data-core="handy">Handy</a>
+                           <a class="dropdown-item" href="." data-core="jaxe">JAXE</a>
+                           <a class="dropdown-item" href="." data-core="jumpnbump">Jump 'n Bump</a>
+                           <a class="dropdown-item" href="." data-core="lowresnx">LowResNX</a>
+                           <a class="dropdown-item" href="." data-core="lutro">Lutro</a>
+                           <a class="dropdown-item" href="." data-core="m2000">M2000</a>
+                           <a class="dropdown-item" href="." data-core="mame2000">MAME 2000</a>
+                           <a class="dropdown-item" href="." data-core="mame2003">MAME 2003</a>
+                           <a class="dropdown-item" href="." data-core="mame2003_plus">MAME 2003-Plus</a>
+                           <a class="dropdown-item" href="." data-core="mednafen_lynx">Mednafen Lynx</a>
+                           <a class="dropdown-item" href="." data-core="mednafen_ngp">Mednafen Neo Geo Pocket</a>
+                           <a class="dropdown-item" href="." data-core="mednafen_pce_fast">Mednafen PC Engine Fast</a>
+                           <!--<a class="dropdown-item" href="." data-core="mednafen_pcfx">Mednafen/Beetle PCFX</a>-->
+                           <a class="dropdown-item" href="." data-core="mednafen_psx">Mednafen/Beetle PSX</a>
+                           <!--<a class="dropdown-item" href="." data-core="mednafen_saturn">Mednafen/Beetle Saturn</a>-->
+                           <a class="dropdown-item" href="." data-core="mednafen_snes">Mednafen/Beetle SNES</a>
+                           <a class="dropdown-item" href="." data-core="mednafen_vb">Mednafen/Beetle Virtual Boy</a>
+                           <a class="dropdown-item" href="." data-core="mednafen_wswan">Mednafen/Beetle WonderSwan</a>
+                           <a class="dropdown-item" href="." data-core="mgba">Mgba</a>
+                           <a class="dropdown-item" href="." data-core="minivmac">MiniVmac</a>
+                           <a class="dropdown-item" href="." data-core="mu">Mu</a>
+                           <a class="dropdown-item" href="." data-core="mupen64plus">Mupen64 Plus</a>
+                           <a class="dropdown-item" href="." data-core="mrboom">MrBoom</a>
+                           <a class="dropdown-item" href="." data-core="nestopia">Nestopia</a>
+                           <a class="dropdown-item" href="." data-core="nxengine">NX Engine</a>
+                           <a class="dropdown-item" href="." data-core="o2em">O2em</a>
+                           <a class="dropdown-item" href="." data-core="opera">Opera</a>
+                           <a class="dropdown-item" href="." data-core="picodrive">PicoDrive</a>
+                           <a class="dropdown-item" href="." data-core="prboom">PrBoom</a>
+                           <a class="dropdown-item" href="." data-core="quasi88">Quasi88</a>
+                           <a class="dropdown-item" href="." data-core="quicknes">QuickNES</a>
+                           <a class="dropdown-item" href="." data-core="retro8">Retro8</a>
+                           <a class="dropdown-item" href="." data-core="flycast">Flycast</a>
+                           <a class="dropdown-item" href="." data-core="snes9x2002">Snes9x 2002</a>
+                           <a class="dropdown-item" href="." data-core="snes9x2005">Snes9x 2005</a>
+                           <a class="dropdown-item" href="." data-core="snes9x2010">Snes9x 2010</a>
+                           <a class="dropdown-item" href="." data-core="snes9x">Snes9x</a>
+                           <a class="dropdown-item" href="." data-core="squirreljme">SquirrelJME</a>
+                           <a class="dropdown-item" href="." data-core="stella">Stella</a>
+                           <a class="dropdown-item" href="." data-core="tgbdual">TGB Dual</a>
+                           <a class="dropdown-item" href="." data-core="theodore">Theodore (Thomson TO8/TO9)</a>
+                           <a class="dropdown-item" href="." data-core="tic80">TIC-80</a>
+                           <a class="dropdown-item" href="." data-core="tyrquake">TyrQuake</a>
+                           <a class="dropdown-item" href="." data-core="uzem">UZEM</a>
+                           <a class="dropdown-item" href="." data-core="vaporspec">Vaporspec</a>
+                           <a class="dropdown-item" href="." data-core="vba_next">VBA Next</a>
+                           <a class="dropdown-item" href="." data-core="vecx">Vecx</a>
+                           <a class="dropdown-item" href="." data-core="vice_x64">VICE x64</a>
+                           <a class="dropdown-item" href="." data-core="vice_x64sc">VICE x64sc</a>
+                           <a class="dropdown-item" href="." data-core="vice_x128">VICE x128</a>
+                           <a class="dropdown-item" href="." data-core="vice_xcbm2">VICE xcbm2</a>
+                           <a class="dropdown-item" href="." data-core="vice_xcbm5x0">VICE xcbm5x0</a>
+                           <a class="dropdown-item" href="." data-core="vice_xpet">VICE xPET</a>
+                           <a class="dropdown-item" href="." data-core="vice_xplus4">VICE xPlus4</a>
+                           <a class="dropdown-item" href="." data-core="vice_xscpu64">VICE xscpu4</a>
+                           <a class="dropdown-item" href="." data-core="vice_xvic">VICE xVIC</a>
+                           <a class="dropdown-item" href="." data-core="vitaquake2">Vita Quake2</a>
+                           <a class="dropdown-item" href="." data-core="vitaquake2-rogue">Vita Quake2 (rogue)</a>
+                           <a class="dropdown-item" href="." data-core="vitaquake2-xatrix">Vita Quake2 (xatrix)</a>
+                           <a class="dropdown-item" href="." data-core="vitaquake2-zaero">Vita Quake2 (zaero)</a>
+                           <a class="dropdown-item" href="." data-core="virtualjaguar">Virtual Jaguar</a>
+                           <a class="dropdown-item" href="." data-core="wasm4">WASM4</a>
+                           <a class="dropdown-item" href="." data-core="x1">XMillenium</a>
+                           <a class="dropdown-item" href="." data-core="xrick">XRick</a>
+                           <a class="dropdown-item" href="." data-core="yabause">Yabause</a>
+                        </div>
+                        <button class="btn btn-primary disabled" id="btnRun" onclick="startRetroArch()" disabled>
+                           <span class="fa fa-spinner fa-spin" id="icnRun"></span> Run
+                        </button>
+                        <button class="btn btn-primary disabled" id="btnAdd" onclick="document.getElementById('btnRom').click()" disabled>
+                           <span class="fa fa-plus" id="icnAdd"></span> Add Content
+                        </button>
+                        <button class="btn btn-primary tooltip-enable" id="btnClean" onclick="cleanupStorage();" title="Cleanup storage">
+                           <span class="fa fa-trash-o" id="icnClean"></span> <span class="sr-only">Cleanup</span>
+                        </button>
+                        <input class="btn btn-primary disabled" style="display: none" type="file" id="btnRom" name="upload" onclick="document.getElementById('btnAdd').click();" onchange="selectFiles(event.target.files)" multiple />
+                        <button class="btn btn-primary disabled tooltip-enable" id="btnMenu" onclick="keyPress('F1');" title="Menu toggle" disabled>
+                           <span class="fa fa-bars" id="btnMenu"></span> <span class="sr-only">Menu</span>
+                        </button>
+                        <button class="btn btn-primary disabled tooltip-enable" id="btnFullscreen" onclick="Module.requestFullscreen(false)" title="Fullscreen" disabled>
+                           <span class="fa fa-desktop" id="icnAdd"></span> <span class="sr-only">Fullscreen</span>
+                        </button>
+                        </button>
+                        <button type="button" class="btn btn-primary tooltip-enable" data-toggle="modal" data-target="#helpModal">Help</button>
+                   </li>
+                </div>
+               </ul>
+               <div class="toggleMenu">
+                  <button class="btn btn-primary" id="btnHideMenu" title="Toggle Menu">
+                     <span class="fa fa-chevron-up" id="icnHideMenu"></span> <span class="sr-only">Hide Top Navigation</span>
+                  </button>
+               </div>
+           </div>
+           <!-- Basics steps modal for Web Libretro -->
+  <div class="modal fade" id="helpModal" role="dialog"  style="color:black;">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h1 class="modal-title">Basics</h1>
+        </div>
+        <div class="modal-body">
+      <h3><b>Load Core</b></h3>
+      <p>Load your core by clicking on the first tab. Scroll down until you reach the desired Core. We will use Nestopia for now. Don't forget - Content must be compatible with the matched Core.</p>
+          <li>Nes: <i>NESTOPIA</i></li>
+      <li>Game Boy / Color: <i>Gambatte</i></li>
+    </ul>
+      <p>etc.</p>
+        <p></p>
+      <h3><b>Load Content</b></h3>
+      <p>After selecting Core, click Run. After RetroArch opens, click Add Content and select your compatible ROM.</p>
+      <li>Nestopia > <i>YourGame.nes</i></li>
+      <li>Gambatte > <i>YourGame.gbc</i></li>
+    </ul>
+    <p>etc.</p>
+              <p></p>
+      <h3><b><span class="fa fa-trash-o"></span> Cleanup Storage</b></h3>
+      <p>The trashcan erases your existing configuration and presets. If the Web Player doesn't start, you should click the trashcan and refresh the cache in your browser (usually F5 or Shift+F5).</p>
+                  <p></p>
+      <h3><b><span class="fa fa-bars"></span> Quick Menu</b></h3>
+      <p>If you click on the three line icons, the Quick Menu will open here as in RetroArch.</p>
+
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+           <!--/.navbar content-->
+       </div>
+   </nav>
+   <div class="bg-inverse webplayer-container">
+      <div class="webplayer_border text-xs-center" id="canvas_div">
+          <div class="showMenu">
+             <button type="button" class="btn btn-link">
+                <span class="fa fa-chevron-down" id="icnShowMenu"></span> <span class="sr-only">Show Top Navigation</span>
+             </button>
+          </div>
+          <canvas class="webplayer" id="canvas" tabindex="1" oncontextmenu="event.preventDefault()" style="display: none"></canvas>
+          <img class="webplayer-preview img-fluid" src="media/canvas.png" width="960px" height="720px" alt="RetroArch Logo">
+      </div>
+   </div>
+
+   <script src="//code.jquery.com/jquery-3.1.0.min.js"></script>
+   <script src="//rawgit.com/jeresig/jquery.hotkeys/master/jquery.hotkeys.js"></script>
+   <script src="//cdnjs.cloudflare.com/ajax/libs/tether/1.3.4/js/tether.min.js"></script>
+   <script src="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0-alpha.3/js/bootstrap.min.js"></script>
+   <script src="analytics.js"></script>
+   <!--script src="//wzrd.in/standalone/browserfs@0.6.1"></script-->
+   <script src="browserfs.min.js"></script>
+   <script src="libretro.js"></script>
+</body>
 </html>
